@@ -1,0 +1,6 @@
+.stignore
+.stfolder
+patches
+archive
+README.md
+systeminfo.txt
