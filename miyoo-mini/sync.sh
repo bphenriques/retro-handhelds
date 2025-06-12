@@ -54,7 +54,6 @@ sync_all() {
   sync "${ROMS_DIR}"/gbc        GBC       gbc_bios.bin      gbc_bios.bin
   sync "${ROMS_DIR}"/gba        GBA       gba_bios.bin      gba_bios.bin
   sync "${ROMS_DIR}"/fbneo      ARCADE
-  sync "${ROMS_DIR}"/dos        DOS
   sync "${ROMS_DIR}"/nes        FC
   sync "${ROMS_DIR}"/snes       SFC
   sync "${ROMS_DIR}"/megadrive  MD
@@ -66,7 +65,6 @@ scrape_all() {
   scrape gbc       "$OUTPUT_DIR"/Roms/GBC
   scrape gba       "$OUTPUT_DIR"/Roms/GBA
   scrape arcade    "$OUTPUT_DIR"/Roms/ARCADE
-  scrape pc        "$OUTPUT_DIR"/Roms/DOS
   scrape nes       "$OUTPUT_DIR"/Roms/FC
   scrape snes      "$OUTPUT_DIR"/Roms/SFC
   scrape megadrive "$OUTPUT_DIR"/Roms/MD
@@ -80,6 +78,13 @@ fix_rtc() {
 sync_extra_files() {
   if test -d "${EXTRA_FILES:-}"; then
     rsync -h --progress --mkpath --no-links -r --update "${EXTRA_FILES:-}"/ "$OUTPUT_DIR"
+  fi
+}
+
+fix_reported_resolution() {
+  if test -f "$OUTPUT_DIR"/.autorun.inf && grep -s Onion-v4.3.1-1 < autorun.inf; then
+    echo "Fixing reported resolution in Miyoo Mini V4 as it is using a version of OnionOS that does not have the fix"
+    sed -i '631s/miyoo_version=202310271401/miyoo_version=202407211632/' "$OUTPUT_DIR"/.tmp_update/runtime.sh
   fi
 }
 
@@ -99,3 +104,4 @@ sync_all
 scrape_all
 fix_rtc
 sync_extra_files
+fix_reported_resolution
